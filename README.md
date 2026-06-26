@@ -1,78 +1,137 @@
-## Number Plate Detection and Recognition System
+# PlateVision — Real-Time License Plate Detection & OCR for Surveillance Cameras
 
-This project implements a robust system for detecting and recognizing vehicle number plates using surveillance camera footage. Leveraging the power of OpenCV and Tesseract OCR, the system processes video input to accurately identify and extract number plate information in various environmental conditions.
+> YOLOv5 + Tesseract OCR · Haar Cascade detection · Real-time video processing · Multiple environment conditions
 
-### Project Overview
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat-square&logo=python)
+![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-green?style=flat-square)
+![YOLOv5](https://img.shields.io/badge/Detection-YOLOv5-red?style=flat-square)
+![OCR](https://img.shields.io/badge/OCR-Tesseract-orange?style=flat-square)
 
-The system uses the YOLOv5 object detection model combined with image processing techniques to locate and decipher number plates from real-time or recorded video feeds. The core functionality is built on Python, utilizing libraries such as OpenCV for image operations and Tesseract OCR for text extraction.
+---
 
-### Features
+## Overview
 
-- Real-time number plate detection from surveillance video streams.
-- High accuracy in diverse lighting and weather conditions.
-- Extraction and recognition of alphanumeric characters from plates.
-- State identification from number plate characters.
+PlateVision is an end-to-end license plate detection and recognition pipeline built for surveillance camera footage. It combines **YOLOv5 object detection** with **Tesseract OCR** and **Haar Cascade classifiers** to locate, extract, and read alphanumeric plate text from real-time or recorded video — across varying lighting and weather conditions.
 
-### Technologies Used
+Includes Indian state identification from plate character patterns.
 
-- Python 3.8+
-- OpenCV (cv2)
-- Numpy
-- Pytesseract
-- Haar Cascades for object detection
+---
 
-### Installation
+## Pipeline
 
-Ensure you have Python 3.8 or higher installed on your system. Follow the steps below to set up the project environment:
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Drashti0913/Object-Detection
-   cd Object-Detection
-   ```
-
-2. Install the required packages:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Set up Tesseract-OCR:
-   - Download and install Tesseract from [this link](https://github.com/tesseract-ocr/tesseract).
-   - Ensure the Tesseract executable is in your system’s path, or modify the `pytesseract.pytesseract.tesseract_cmd` path in the script.
-
-### Usage
-
-To run the number plate detection on an image file:
-
-```bash
-python detect.py --source <path_to_your_image>
+```
+Video / Image Input
+        │
+        ▼
+┌───────────────────────┐
+│  Plate Detection       │
+│  YOLOv5 + Haar        │
+│  Cascade (haarcascade │
+│  _russian_plate.xml)  │
+└───────────┬───────────┘
+            │ bounding box crop
+            ▼
+┌───────────────────────┐
+│  Image Preprocessing  │
+│  Grayscale → Thresh   │
+│  → Noise filtering    │
+│  → Contour detection  │
+└───────────┬───────────┘
+            │ cleaned plate ROI
+            ▼
+┌───────────────────────┐
+│  Tesseract OCR        │
+│  Alphanumeric         │
+│  character extraction │
+└───────────┬───────────┘
+            │
+            ▼
+   Plate text + State ID
+   Bounding box overlay
+   Saved output image/video
 ```
 
-Replace `<path_to_your_image>` with the path to the image you want to process.
+---
 
-### Results
+## Results
 
-The system outputs images with detected number plates highlighted by bounding boxes. Detected text from the number plates is displayed above the bounding boxes. Results are saved as image files and can also be viewed in a window during processing.
+| Input | Detection |
+|---|---|
+| ![Result](Result.png) | ![Result1](Result1.png) |
+| ![Result3](Result3.png) | ![Result5](Result5.png) |
 
-### Contributing
+---
 
-Contributions to this project are welcome. To contribute:
+## Features
 
-1. Fork the repository.
-2. Create a new branch for your feature (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the branch (`git push origin feature/AmazingFeature`).
-5. Open a pull request.
+- Real-time detection from surveillance video streams (`video.mp4`)
+- Works across diverse lighting, angles, and weather conditions
+- Alphanumeric OCR with Indian state code identification
+- Bounding box overlay with extracted text display
+- Multiple detection scripts for different scenarios (`main.py` → `main5.py`)
 
-### License
+---
 
-This project is licensed under the MIT License - see the LICENSE.md file for details.
+## Iteration History
 
-### Acknowledgements
+The repo contains 6 progressive implementations (`main.py` through `main5.py`) representing the development journey:
 
-- Thanks to the YOLOv5 team for their state-of-the-art object detection model.
-- Thanks to the developers of Tesseract OCR for providing a powerful tool for text recognition tasks.
+| Version | Approach |
+|---|---|
+| `main.py` | Haar Cascade only, static images |
+| `main2.py` | Added Tesseract OCR pipeline |
+| `main3.py` | Preprocessing improvements (adaptive threshold) |
+| `main4.py` | Multi-plate detection (multiple cars) |
+| `main5.py` | Video stream processing, real-time output |
 
-### Contact
+---
 
-For any inquiries or issues, please open an issue on the repository, or contact [drashtibhavsar09@gmail.com](mailto:drashtibhavsar09@gmail.com).
+## Quick Start
+
+```bash
+git clone https://github.com/Drashti0913/Numberplate-Recognition-SurvilalnceCameras.git
+cd Numberplate-Recognition-SurvilalnceCameras
+
+pip install opencv-python numpy pytesseract
+
+# Install Tesseract OCR engine
+# Mac: brew install tesseract
+# Ubuntu: sudo apt install tesseract-ocr
+# Windows: https://github.com/UB-Mannheim/tesseract/wiki
+
+# Run on image
+python main.py --source car1.jpeg
+
+# Run on video
+python main5.py --source video.mp4
+```
+
+---
+
+## Tech Stack
+
+| Component | Technology |
+|---|---|
+| Object detection | YOLOv5 + Haar Cascade |
+| OCR engine | Tesseract (`pytesseract`) |
+| Image processing | OpenCV (grayscale, threshold, contours) |
+| Video processing | OpenCV VideoCapture |
+| Language | Python 3.8+ |
+
+---
+
+## Key Challenges Solved
+
+**Variable lighting:** Adaptive thresholding instead of fixed binary threshold — handles shadows, glare, and night footage better than a static value.
+
+**Skewed plates:** Contour-based rotation correction before OCR — plates at an angle produce garbage text without this step.
+
+**Multiple plates in frame:** Contour area filtering to isolate individual plate regions when multiple vehicles appear simultaneously.
+
+**OCR noise:** Post-processing to strip non-alphanumeric characters and apply Indian plate regex patterns for validation.
+
+---
+
+## License
+
+MIT
