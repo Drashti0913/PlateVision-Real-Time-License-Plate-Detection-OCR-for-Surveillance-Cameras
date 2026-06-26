@@ -57,9 +57,7 @@ Video / Image Input
 
 | Input | Detection |
 |---|---|
-| ![Result](Result.png) | ![Result1](Result1.png) |
-| ![Result3](Result3.png) | ![Result5](Result5.png) |
-
+| ![Result](Result.png) |
 ---
 
 ## Features
